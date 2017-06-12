@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>chapter01</title>
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+	<h1>第1章 认识 jQuery</h1>
+	<h2>1.1 编写简单的 jQuery 代码</h2>
+	<p>
+		在 jQuery 库中，$ 就是 jQuery 的一个简写形式，例如：$("#foo") 和 jQuery("#foo") 是等价的，$.ajax 和 jQuery.ajax 是等价的。
+	</p>
+	<table>
+		<caption>window.onload 与 $(document).ready() 的对比</caption>
+		<tr>
+			<th></th>
+			<th>window.onload</th>
+			<th>$(document).ready()</th>
+		</tr>
+		<tr>
+			<th>执行时机</th>
+			<td>必须等待网页中所有的内容加载完毕后（包括图片）才能执行</td>
+			<td>网页中所有 DOM 结构绘制完毕后就执行，可能 DOM 元素关联的东西并没有加载完</td>
+		</tr>
+		<tr>
+			<th>编写个数</th>
+			<td>
+				不能同时编写多个<br />
+				以下代码无法正确执行：<br />
+				<code class="none">
+					window.onload = function() {<br />
+					&nbsp;&emsp;&emsp;alert("test1");<br />
+					};<br />
+					window.onload = function() {<br />
+					&nbsp;&emsp;&emsp;alert("test2");<br />
+					};<br />
+				</code><br />
+				结果只会输出 "test2"
+			</td>
+			<td>
+				能同时编写多个<br />
+				以下代码正确执行：<br />
+				<code class="none">
+					$(document).ready(function() {<br />
+					&nbsp;&emsp;&emsp;alert("Hello World!");<br />
+					});<br />
+					$(document).ready(function() {<br />
+					&nbsp;&emsp;&emsp;alert("Hello again!");<br />
+					});
+				</code><br />
+				结果两次都输出
+			</td>
+		</tr>
+		<tr>
+			<th>简化写法</th>
+			<td>无</td>
+			<td>
+				<code class="none">
+					$(document).ready(function() {<br />
+					//...<br />
+					});<br />
+				</code><br />
+				可以简写成：<br />
+				<code class="none">
+					$(function() {<br />
+					//...<br />
+					});<br />
+				</code>
+			</td>
+		</tr>
+	</table>
+	<h2>1.2 jQuery 代码风格</h2>
+	<h3>1. 链式操作风格</h3>
+	<p>(1) 对于同一个对象不超过3个操作的，可以直接写成一行。</p>
+	<code>
+		$("li").show().unbind("click");
+	</code>
+	<p>(2) 对于同一个对象的较多操作，建议每行写一个操作。</p>
+	<code>
+		$(this).removeClass("mouseout")<br />
+		&nbsp;&emsp;&emsp;.addClass("mouseover")<br />
+		&nbsp;&emsp;&emsp;.stop()<br />
+		&nbsp;&emsp;&emsp;.fadeTo("fast", 0.6)<br />
+		&nbsp;&emsp;&emsp;.fadeTo("fast", 1)<br />
+		&nbsp;&emsp;&emsp;.unbind("click")<br />
+		&nbsp;&emsp;&emsp;.click(function() {<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;//do something ...<br />
+		&nbsp;&emsp;&emsp;});
+	</code>
+	<p>(3) 对于多个对象的少量操作，可以每个对象写一行，如果涉及子元素，可以考虑适当地缩进。</p>
+	<code>
+		$(this).addClass("highlight")<br />
+		&nbsp;&emsp;&emsp;.children("li").show().end()<br />
+		.siblings().removeClass("highlight")<br />
+		&nbsp;&emsp;&emsp;.children("li").hide();
+	</code>
+	<h3>2. 为代码添加注释</h3>
+	<h2>1.3 jQuery 对象和 DOM 对象的相互转换</h2>
+	<p>
+		在讨论 jQuery 对象和 DOM 对象的相互转换之前，先约定好定义变量的风格。<br />
+		如果获取的对象是 jQuery 对象，那么在变量前面加上 $。
+	</p>
+	<code>
+		var $variable = jQuery 对象;<br />
+		var variable = DOM 对象；
+	</code>
+	<p>
+		jQuery 提供了两种方法将一个 jQuery 对象转换成 DOM 对象，即 [index] 和 get(index)。
+	</p>
+	<h3>1. jQuery 对象转成 DOM 对象</h3>
+	<p>(1) jQuery 对象是一个类似数组的对象，可以通过 [index] 的方法得到相应的 DOM 对象。</p>
+	<code>
+		var $cr = $("#cr"); //jQuery 对象<br />
+		var cr = $cr[0]; //DOM 对象
+	</code>
+	<p>(2) 另一种方法是 jQuery 本身提供的，通过 get(index) 方法得到相应的 DOM 对象。</p>
+	<code>
+		var $cr = $("#cr"); //jQuery 对象<br />
+		var cr = $cr.get(0); //DOM 对象
+	</code>
+	<h3>2. DOM 对象转成 jQuery 对象</h3>
+	<p>
+		对于一个 DOM 对象，只需要用 $() 把 DOM 对象包装起来，就可以获得一个 jQuery 对象了。
+	</p>
+	<code>
+		var cr = document.getElementById("cr"); //DOM 对象<br />
+		var $cr = $(cr); //jQuery 对象
+	</code>
+	<p>
+		注意，DOM 对象才能使用 DOM 中的方法，jQuery 对象不可以使用 DOM 中的方法。
+	</p>
+	<h2>1.4</h2>
+	<p>
+		在 jQuery 库中，几乎所有的插件都被限制在它的命名空间里。通常，全局对象都被很好地存储在 jQuery 命名空间里，因此当把 jQuery 和其他 JavaScript 库（例如 Prototype、MooTools 或 YUI）一起使用时，不会引起冲突。<br />
+		默认情况下，jQuery 用 $ 作为自身的快捷方式。
+	</p>
+	<h3>1. jQuery 库在其他库之后导入</h3>
+	<p>
+		在其他库和 jQuery 库都被加载完毕后，可以在任何时候调用 jQuery.noConflict() 函数来将变量 $ 的控制权移交给其他 JavaScript 库。
+	</p>
+	<code>
+		jQuery.noConflict(); //将变量 $ 的控制权交给 prototype.js<br />
+		jQuery(function() { //使用 jQuery<br />
+		&nbsp;&emsp;&emsp;jQuery("p").click(function() {<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;alert(jQuery(this).text());<br />
+		&nbsp;&emsp;&emsp;});<br />
+		});<br />
+		$("pp").style.display = 'none'; //使用 prototype.js 隐藏元素
+	</code>
+	<p>
+		然后，就可以在程序里将 jQuery() 函数作为 jQuery 对象的制造工厂。
+	</p>
+	<p>
+		如果想确保 jQuery 不会与其他库冲突，但又想自定义一个快捷方法，可以进行如下操作：
+	</p>
+	<code>
+		var $j = jQuery.noConflict(); //自定义一个快捷方法<br />
+		$j(function() { //使用 jQuery，利用自定义快捷方式————$j<br />
+		&nbsp;&emsp;&emsp;$j("p").click(function() {<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;alert($j(this).text());<br />
+		&nbsp;&emsp;&emsp;});<br />
+		});<br />
+		$("pp").style.display = 'none'; //使用 prototype.js 隐藏元素
+	</code>
+	<p>
+		如果不想给 jQuery 自定义这些备用名称，还想使用 $ 而不管其他库的 $() 方法，同时又不想与其他库相冲突，那么可以使用以下两种解决方法。
+	</p>
+	<code>
+		jQuery.noConflict(); //将变量 $ 的控制权让渡给 prototype.js<br />
+		jQuery(function($) { //使用 jQuery 设定页面加载时执行的函数<br />
+		&nbsp;&emsp;&emsp;$("p").click(function() { //在函数内部继续使用 $() 方法<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;alert($(this).text());<br />
+		&nbsp;&emsp;&emsp;});<br />
+		});<br />
+		$("pp").style.display = 'none'; //使用 prototype.js 隐藏元素
+	</code><br /><br />
+	<code>
+		jQuery.noConflict(); //将变量 $ 的控制权让渡给 prototype.js<br />
+		(function($) { //定义匿名函数并设置形参为 $<br />
+		&nbsp;&emsp;&emsp;$(function() { //匿名函数内部的 $ 均为 jQuery<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;$("p").click(function() { //继续使用 $() 方法<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;alert($(this).text());<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;});<br />
+		&nbsp;&emsp;&emsp;});<br />
+		})(jQuery); //执行匿名函数且传递实参 jQuery<br />
+		$("pp").style.display = 'none'; //使用 prototype.js 隐藏元素
+	</code>
+	<h3>2. jQuery 库在其他库之前导入</h3>
+	<p>
+		如果 jQuery 库在其他库之前就导入了，那么可以直接使用 "jQuery" 来做一些 jQuery 的工作。同时，可以使用 $() 方法作为其他库的快捷方式。这里无需调用 jQuery.noConflict() 函数。
+	</p>
+	<code>
+		jQuery(function() { //直接使用 jQuery，无需调用 "jQuery.noConflict()" 函数<br />
+		&nbsp;&emsp;&emsp;jQuery("p").click(function() {<br />
+		&nbsp;&emsp;&emsp;&nbsp;&emsp;&emsp;alert(jQuery(this).text());<br />
+		&nbsp;&emsp;&emsp;});<br />
+		});<br />
+		$("pp").style.display = 'none'; //使用 prototype.js 隐藏元素
+	</code>
+
+
+
+
+
+
+	<script src="js/jquery.min.js"></script>
+	<script>
+		var $cr = $("input[type='checkbox']");
+		console.log($cr);
+		var cr = $cr[0];
+		console.log(cr);
+		for(var x in cr) {
+			console.log(x + " " + cr[x]);
+		}
+	</script>
+</body>
+</html>
